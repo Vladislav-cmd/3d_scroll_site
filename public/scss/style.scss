@@ -1,0 +1,192 @@
+@import '_nullstyle';
+
+// Переменные
+:root {
+   --index: calc(1vw + 1vh);
+   --gutter: 30px;
+   --side-small: 26;
+   --side-big: 36;
+   --depth: 4000px;
+   --transition: .75s cubic-bezier(.075, .5, 0, 1);
+}
+
+// Подключение шрифтов
+@font-face {
+   font-family: raleway_c;
+   src: url(../fonts/raleway-v22-cyrillic-300.woff2);
+   font-weight: 300;
+}
+
+@font-face {
+   font-family: raleway_c;
+   src: url(../fonts/raleway-v22-cyrillic-100.woff2);
+   font-weight: 100;
+}
+
+// работает в Chrome, Opera, не работает в Firefox
+html {
+   overflow: scroll;
+   overflow-x: hidden;
+
+   &::-webkit-scrollbar {
+      width: 0px;
+      background: transparent;
+   }
+}
+
+body {
+   background-color: #000;
+   color: #fff;
+   font-size: calc(var(--index) * 0.8);
+   font-family: raleway_c, sans-serif;
+   line-height: 1.75;
+   height: var(--depth);
+   font-weight: 300;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+   font-weight: 100;
+   text-transform: uppercase;
+   width: min-content;
+   line-height: 1;
+}
+
+.wrapper {
+   width: 100%;
+   height: 100%;
+   // чтобы фиксировать, так как скролл будет по оси Z (с помощью JS)
+   position: fixed;
+   // данный параметр обязателен для родителя, если работать с трансформированием по оси Z
+   perspective: 1500px;
+}
+
+.gallery {
+   // оболочка после wrapper должна иметь такое свойство (тоже для оси Z)
+   // то есть вся прослой до дочернего класса (в данном случае до .frame)
+   transform-style: preserve-3d;
+   height: 100%;
+}
+
+// кадры центрированы и наложены один на другой, после идем в JS
+.frame {
+   position: absolute;
+   width: 100%;
+   height: 100%;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   // плавно изменять прозначность 
+   transition: var(--transition), opacity .75s ease;
+   // исключает какие-либо фризы в браузерах и задействует большую аппаратную мощность для гладкости
+   will-change: transform;
+   transform-style: preserve-3d;
+}
+
+.frame__content {
+   h2 {
+      font-weight: 300;
+      text-shadow: 2px 2px 5px #bd1b1b;
+      text-transform: uppercase;
+      text-align: center;
+      font-size: calc(var(--index) * 3.3);
+      // чтобы текст переносился можно max-width или min-content, то есть в минимальный контент вмещать все слова
+      width: min-content;
+      line-height: .87;
+   }
+
+   h3 {
+      font-size: calc(var(--index) * 3);
+   }
+
+   p {
+      max-width: 30vw;
+      margin-top: 5vh;
+   }
+
+   video {
+      &.frame-media {
+         width: calc(var(--index) * var(--side-big));
+         height: calc(var(--index) * var(--side-small));
+      }
+
+      &.frame-media_right {
+         left: calc(var(--side-big) / 2 * var(--index) + var(--gutter));
+      }
+
+      &.frame-media_left {
+         right: calc(var(--side-big) / 2 * var(--index) + var(--gutter));
+      }
+   }
+}
+
+.text-left {
+   * {
+      position: relative;
+      right: 18vw;
+   }
+}
+
+.text-right {
+   * {
+      position: relative;
+      left: 18vw;
+   }
+}
+
+.frame-media {
+   position: relative;
+   width: calc(var(--index) * var(--side-small));
+   height: calc(var(--index) * var(--side-big));
+   background-position: center;
+   background-size: cover;
+}
+
+.frame-right__horizontal {
+   position: relative;
+   background-position: center;
+   background-size: cover;
+   width: calc(var(--index) * var(--side-big));
+   height: calc(var(--index) * var(--side-small));
+   left: calc(var(--side-big) / 2 * var(--index) + var(--gutter)) !important;
+}
+
+.frame-center {
+   position: relative;
+   background-position: center;
+   background-size: cover;
+   width: calc(var(--index) * var(--side-big));
+   height: calc(var(--index) * var(--side-small));
+}
+
+// отталкиваем от правого края (на половину ширины кадра + зазор)
+.frame-media_left {
+   right: calc(var(--side-small) / 2 * var(--index) + var(--gutter));
+}
+
+// отталкиваем от левого края
+.frame-media_right {
+   left: calc(var(--side-small) / 2 * var(--index) + var(--gutter));
+}
+
+// класс, затемняющий фрейм следующий за ним (тем, что на свой фрем накладывает фон, который имеет свою прозрачность
+// Параметр alpha — это число в диапазоне от 0.0 (полностью прозрачный) до 1.0 (полностью непрозрачный).
+.frame_bg {
+   background-color: rgba(0, 0, 0, .87);
+}
+
+.soundbutton {
+   position: fixed;
+   bottom: 5vh;
+   right: 5vw;
+   cursor: pointer;
+   width: 24px;
+   transition: all 0.3s ease 0s;
+
+   &.paused {
+      opacity: .5;
+   }
+}
